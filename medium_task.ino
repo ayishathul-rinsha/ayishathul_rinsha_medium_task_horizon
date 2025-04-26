@@ -6,7 +6,7 @@ int encoderPin2 = 3;
 volatile int lastEncoded = 0;
 volatile long encoderValue = 0;
 
-const long PPR = 3820; // Pulses Per Revolution (360 degrees)
+const long PPR = 3820; // Pulses Per Revolution for approximate 20 RPM
 
 bool waitingForInput = true;
 float targetAngle = 0;
@@ -47,15 +47,10 @@ void loop() {
 
 void rotateToAngle(float desiredAngle) {
   float currentAngle = (float)encoderValue * 360.0 / (float)PPR;
-
-  // Normalize currentAngle to -180° to 180°
+  
   currentAngle = normalizeAngle(currentAngle);
 
   float angleToRotate = desiredAngle - currentAngle;
-
-  // Handle shortest rotation (optional)
-  if (angleToRotate > 180) angleToRotate -= 360;
-  if (angleToRotate < -180) angleToRotate += 360;
 
   long pulsesToRotate = (angleToRotate * PPR) / 360;
   long targetEncoderValue = encoderValue + pulsesToRotate;
@@ -74,7 +69,6 @@ void rotateToAngle(float desiredAngle) {
     }
   }
 
-  // Stop the motor
   digitalWrite(motorA, LOW);
   digitalWrite(motorB, LOW);
 }
